@@ -13,7 +13,7 @@ module.exports = {
     description: 'Play a sound of the mythic!',
     aliases: ["s"],
     execute,
-    randomPlaySound
+    playSound
 };
 
 /**
@@ -26,8 +26,19 @@ async function execute(message, args) {
     if (message.member.voice.channel) {
         // TODO ESEGUIRE SUONO SOLO SE IN UN CANALE
         const connection = await message.member.voice.channel.join();
+        if (process.env.DEBUG) {
+            // Debug
+            connection.on('debug', console.log);
+        }
+        // check if there is a argument!
+        if (args.length === 0) {
+            await playSound(connection);
+            return;
+        }
 
-        randomPlaySound(connection);
+        for (const sound of args) {
+            await playSound(connection, sound);
+        }
     }
 }
 
@@ -36,7 +47,24 @@ const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 /**
  * @param {VoiceConnection} connection 
  */
-async function randomPlaySound(connection) {
-    const soundToPlay = SOUNDS[random(0, SOUNDS.length - 1)];
-    connection.play(soundToPlay);
+async function playSound(connection, sound) {
+    return new Promise((res, rej) => {
+        // If there is no sound to play get it random!
+        if (!sound) {
+            sound = SOUNDS[random(0, SOUNDS.length - 1)];
+        } else {
+            sound = SOUNDS.find(savedSound => savedSound.search(sound) > 0)
+        }
+
+        const dispatcher = connection.play(sound);
+
+        dispatcher.on('finish', () => {
+            console.log(`${sound} has finished playing!`);
+            res();
+            return;
+        });
+
+        // Always remember to handle errors appropriately!
+        dispatcher.on('error', rej);
+    });
 };
