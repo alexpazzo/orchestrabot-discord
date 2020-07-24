@@ -2,6 +2,8 @@ require('dotenv').config()
 const { Client, Collection } = require('discord.js');
 const { readdirSync } = require("fs");
 const { join } = require("path");
+const { CronJob } = require('cron');
+
 const client = new Client();
 const TOKEN = process.env.TOKEN;
 const PREFIX = process.env.PREFIX;
@@ -24,6 +26,19 @@ for (const file of commandFiles) {
  */
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
+
+    // add cron for leave work
+    var job = new CronJob('* 18 * * *', function () {
+        console.log('broadcast')
+        const broadcast = client.voice.createBroadcast();
+        // TODO change with the real audio
+        broadcast.play('audio/nonlesei.mp3');
+        for (const connection of client.voice.connections.values()) {
+            connection.play(broadcast);
+        }
+    }, null, true, 'Europe/Rome');
+    job.start();
+
 });
 
 /**

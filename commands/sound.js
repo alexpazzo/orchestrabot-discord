@@ -56,6 +56,8 @@ async function playSound(connection, sound) {
             sound = SOUNDS.find(savedSound => savedSound.search(sound) > 0)
         }
 
+        if (!sound) return;
+
         const dispatcher = connection.play(sound);
 
         dispatcher.on('finish', () => {
