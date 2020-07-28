@@ -3,9 +3,9 @@ const { playSound } = require('./sound');
 
 
 module.exports = {
-    name: 'needbelli',
-    description: 'Add the bot to your Channel!',
-    aliases: ["nb"],
+    name: 'needorchestra',
+    description: 'Aggiunge il bot al tuo canale!',
+    aliases: ["no"],
     execute
 };
 
@@ -15,7 +15,7 @@ module.exports = {
  * @param {*} args 
  */
 async function execute(message, args) {
-    message.reply('Arrivo al volo!');
+    message.reply('Arriviamo al volo!');
 
     // Join the same voice channel of the author of the message
     if (message.member.voice.channel) {

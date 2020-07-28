@@ -4,7 +4,7 @@ const { randomPlaySound } = require('./sound');
 
 module.exports = {
     name: 'goaway',
-    description: 'Mi ha rotto il cazzo Belli!',
+    description: 'Rimuove il bot dal tuo canale!',
     aliases: ["ga"],
     execute
 };
