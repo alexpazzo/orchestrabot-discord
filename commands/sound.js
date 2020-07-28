@@ -4,9 +4,15 @@ const { join } = require("path");
 
 const SOUNDS = fs.readdirSync(join("audio"))
     .filter(file => file.endsWith(".ogg"))
-    .map(file => join("audio", file));
-
-
+    .map(name => {
+        // Tags are taken from the filename (numbers are ignored)
+        const tags = name
+            .replace('.ogg', '')
+            .split('_')
+            .filter(t => !/^\d+$/.test(t));
+        const path = join("audio", name);
+        return { name, tags, path };
+    });
 
 module.exports = {
     name: 'sound',
@@ -58,10 +64,10 @@ async function playSound(connection, sound) {
 
         if (!sound) return;
 
-        const dispatcher = connection.play(fs.createReadStream(sound), { type: 'ogg/opus' });
+        const dispatcher = connection.play(fs.createReadStream(sound.path), { type: 'ogg/opus' });
 
         dispatcher.on('finish', () => {
-            console.log(`${sound} has finished playing!`);
+            console.log(`${sound.name} (${sound.tags.join(',')}) has finished playing!`);
             res();
             return;
         });
