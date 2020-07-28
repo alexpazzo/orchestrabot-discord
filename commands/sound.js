@@ -42,7 +42,7 @@ async function execute(message, args) {
 
         const tags = args.length ? args : null;
         const actions = await playSound({ connection, tags });
-        if (!actions) return;
+        if (!actions || actions.length === 0) return;
 
         console.log("This sound have actions to do!");
         for (const action of actions) {
