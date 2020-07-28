@@ -45,32 +45,45 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+    
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME
+          tag_with_ref: true
+          push: ${{ startsWith(github.ref, 'refs/tags/') }}
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+    # steps:
+    #   - uses: actions/checkout@v2
 
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+    #   - name: Build image
+    #     run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
-      - name: Push image
-        run: |
-          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+    #   - name: Log into registry
+    #     run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+    #   - name: Push image
+    #     run: |
+    #       IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
 
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+    #       # Change all uppercase to lowercase
+    #       IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+    #       # Strip git ref prefix from version
+    #       VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
-          # Use Docker `latest` tag convention
-          [ "$VERSION" == "master" ] && VERSION=latest
+    #       # Strip "v" prefix from tag name
+    #       [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
+    #       # Use Docker `latest` tag convention
+    #       [ "$VERSION" == "master" ] && VERSION=latest
 
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+    #       echo IMAGE_ID=$IMAGE_ID
+    #       echo VERSION=$VERSION
+
+    #       docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+    #       docker push $IMAGE_ID:$VERSION
