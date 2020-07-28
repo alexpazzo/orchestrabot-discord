@@ -40,7 +40,7 @@ async function randomPlaySound(message, args) {
     await Sound.execute(message, args);
 
     // Set timeout for the next sound
-    const next = random(3, 10) * 60 * 1000;
+    const next = random(5, 15) * 60 * 1000;
 
     console.log(`Next sound will be at ${new Date(Date.now() + next).toISOString()}`);
 
