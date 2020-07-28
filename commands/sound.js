@@ -1,17 +1,20 @@
 const { Message, VoiceConnection } = require("discord.js");
 const fs = require("fs");
 const { join } = require("path");
+const { executeAction } = require('../utils/actions');
 
 const SOUNDS = fs.readdirSync(join("audio"))
     .filter(file => file.endsWith(".ogg"))
     .map(name => {
-        // Tags are taken from the filename (numbers are ignored)
-        const tags = name
+        const [tagString, ...actions] = name
             .replace('.ogg', '')
+            .split('#');
+        // Tags are taken from the filename (numbers are ignored)
+        const tags = tagString
             .split('_')
             .filter(t => !/^\d+$/.test(t));
         const path = join("audio", name);
-        return { name, tags, path };
+        return { name, tags, actions, path };
     });
 
 module.exports = {
@@ -38,7 +41,13 @@ async function execute(message, args) {
         }
 
         const tags = args.length ? args : null;
-        await playSound({ connection, tags });
+        const actions = await playSound({ connection, tags });
+        if (!actions) return;
+
+        console.log("This sound have actions to do!");
+        for (const action of actions) {
+            await executeAction(action, message);
+        }
     }
 }
 
@@ -66,7 +75,7 @@ async function playSound({ connection, tags }) {
 
         dispatcher.on('finish', () => {
             console.log(`${sound.name} (${sound.tags.join(',')}) has finished playing!`);
-            res();
+            res(sound.actions);
             return;
         });
 
