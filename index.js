@@ -58,10 +58,10 @@ client.on('message', async msg => {
     if (!command) return;
     // else execute command
     try {
-        command.execute(msg, args);
-    } catch (error) {
-        console.error(error);
-        msg.reply("There was an error executing that command.").catch(console.error);
+        await command.execute(msg, args);
+    } catch (err) {
+        console.error(err);
+        msg.reply(`_There was an error executing that command_.\n${err.message}`).catch(console.error);
     }
 });
 
