@@ -36,15 +36,9 @@ async function execute(message, args) {
             // Debug
             connection.on('debug', console.log);
         }
-        // check if there is a argument!
-        if (args.length === 0) {
-            await playSound(connection);
-            return;
-        }
 
-        for (const sound of args) {
-            await playSound(connection, sound);
-        }
+        const tags = args.length ? args : null;
+        await playSound({ connection, tags });
     }
 }
 
@@ -53,16 +47,20 @@ const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 /**
  * @param {VoiceConnection} connection 
  */
-async function playSound(connection, sound) {
+async function playSound({ connection, tags }) {
     return new Promise((res, rej) => {
-        // If there is no sound to play get it random!
-        if (!sound) {
+        let sound = null;
+
+        // If there are no tags, play a random sound!
+        if (!tags) {
             sound = SOUNDS[random(0, SOUNDS.length - 1)];
         } else {
-            sound = SOUNDS.find(savedSound => savedSound.search(sound) > 0)
+            // Get a list of all the sounds with the requested tags
+            const filtered = SOUNDS.filter(s => tags.every(t => s.tags.includes(t)));
+            sound = filtered[random(0, filtered.length - 1)];
         }
 
-        if (!sound) return;
+        if (!sound) throw new Error(`No sounds found with tags "${tags.join(', ')}"`);
 
         const dispatcher = connection.play(fs.createReadStream(sound.path), { type: 'ogg/opus' });
 
