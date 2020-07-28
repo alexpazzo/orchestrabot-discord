@@ -1,5 +1,5 @@
-# bellibot-discord
-Discord Bot for simulate Alebelli behaviours
+# orchestrabot-discord
+Discord Bot for simulate Orchestra team behaviours
 
 add .env file with
 ```
