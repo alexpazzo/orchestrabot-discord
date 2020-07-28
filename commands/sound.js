@@ -56,7 +56,7 @@ async function playSound({ connection, tags }) {
             sound = SOUNDS[random(0, SOUNDS.length - 1)];
         } else {
             // Get a list of all the sounds with the requested tags
-            const filtered = SOUNDS.filter(s => tags.every(t => s.tags.includes(t)));
+            const filtered = SOUNDS.filter(s => tags.every(t => s.tags.join(',').includes(t)));
             sound = filtered[random(0, filtered.length - 1)];
         }
 
