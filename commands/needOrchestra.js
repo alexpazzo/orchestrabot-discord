@@ -25,7 +25,7 @@ async function execute(message, args) {
             connection.on('debug', console.log);
         }
 
-        await randomPlaySound(connection);
+        await randomPlaySound({ connection });
     }
 }
 
