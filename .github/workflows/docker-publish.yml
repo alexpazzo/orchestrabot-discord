@@ -53,9 +53,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: myorg/myrepository
-          tag_with_ref: true
-          push: ${{ startsWith(github.ref, 'refs/tags/') }}
+          repository: myorg/$IMAGE_NAME
+          tags: latest
+       
 
     # steps:
     #   - uses: actions/checkout@v2
