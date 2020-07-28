@@ -25,10 +25,6 @@ async function execute(message, args) {
             connection.on('debug', console.log);
         }
 
-        connection.on('disconnect', (a) => {
-            debugger;
-        });
-
         await randomPlaySound(connection);
     }
 }

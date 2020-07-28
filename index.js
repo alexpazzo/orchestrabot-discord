@@ -1,6 +1,6 @@
 require('dotenv').config()
 const { Client, Collection } = require('discord.js');
-const { readdirSync } = require("fs");
+const fs = require("fs");
 const { join } = require("path");
 const { CronJob } = require('cron');
 
@@ -15,7 +15,7 @@ client.prefix = PREFIX;
 /**
  * Import all commands
  */
-const commandFiles = readdirSync(join(__dirname, "commands")).filter((file) => file.endsWith(".js"));
+const commandFiles = fs.readdirSync(join(__dirname, "commands")).filter((file) => file.endsWith(".js"));
 for (const file of commandFiles) {
     const command = require(join(__dirname, "commands", file));
     client.commands.set(command.name, command);
@@ -32,7 +32,7 @@ client.on('ready', async () => {
         console.log('broadcast')
         const broadcast = client.voice.createBroadcast();
         // TODO change with the real audio
-        broadcast.play('audio/nonlesei.mp3');
+        broadcast.play(fs.createReadStream('audio / nonlesei.mp3'), { type: 'ogg/opus' });
         for (const connection of client.voice.connections.values()) {
             connection.play(broadcast);
         }

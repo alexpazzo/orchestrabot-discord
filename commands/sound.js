@@ -1,9 +1,9 @@
 const { Message, VoiceConnection } = require("discord.js");
-const { readdirSync } = require("fs");
+const fs = require("fs");
 const { join } = require("path");
 
-const SOUNDS = readdirSync(join("audio"))
-    .filter(file => file.endsWith(".mp3"))
+const SOUNDS = fs.readdirSync(join("audio"))
+    .filter(file => file.endsWith(".ogg"))
     .map(file => join("audio", file));
 
 
@@ -58,7 +58,7 @@ async function playSound(connection, sound) {
 
         if (!sound) return;
 
-        const dispatcher = connection.play(sound);
+        const dispatcher = connection.play(fs.createReadStream(sound), { type: 'ogg/opus' });
 
         dispatcher.on('finish', () => {
             console.log(`${sound} has finished playing!`);
