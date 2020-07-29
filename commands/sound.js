@@ -1,17 +1,21 @@
 const { Message, VoiceConnection } = require("discord.js");
 const fs = require("fs");
 const { join } = require("path");
+const { executeAction } = require('../utils/actions');
+const random = require('../utils/random');
 
 const SOUNDS = fs.readdirSync(join("audio"))
     .filter(file => file.endsWith(".ogg"))
     .map(name => {
-        // Tags are taken from the filename (numbers are ignored)
-        const tags = name
+        const [tagString, ...actions] = name
             .replace('.ogg', '')
+            .split('#');
+        // Tags are taken from the filename (numbers are ignored)
+        const tags = tagString
             .split('_')
             .filter(t => !/^\d+$/.test(t));
         const path = join("audio", name);
-        return { name, tags, path };
+        return { name, tags, actions, path };
     });
 
 module.exports = {
@@ -36,39 +40,41 @@ async function execute(message, args) {
             // Debug
             connection.on('debug', console.log);
         }
-        // check if there is a argument!
-        if (args.length === 0) {
-            await playSound(connection);
-            return;
-        }
 
-        for (const sound of args) {
-            await playSound(connection, sound);
+        const tags = args.length ? args : null;
+        const actions = await playSound({ connection, tags });
+        if (!actions || actions.length === 0) return;
+
+        console.log("This sound have actions to do!");
+        for (const action of actions) {
+            await executeAction(action, message);
         }
     }
 }
 
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
-
 /**
  * @param {VoiceConnection} connection 
  */
-async function playSound(connection, sound) {
+async function playSound({ connection, tags }) {
     return new Promise((res, rej) => {
-        // If there is no sound to play get it random!
-        if (!sound) {
+        let sound = null;
+
+        // If there are no tags, play a random sound!
+        if (!tags) {
             sound = SOUNDS[random(0, SOUNDS.length - 1)];
         } else {
-            sound = SOUNDS.find(savedSound => savedSound.search(sound) > 0)
+            // Get a list of all the sounds with the requested tags
+            const filtered = SOUNDS.filter(s => tags.every(t => s.tags.join(',').includes(t)));
+            sound = filtered[random(0, filtered.length - 1)];
         }
 
-        if (!sound) return;
+        if (!sound) throw new Error(`No sounds found with tags "${tags.join(', ')}"`);
 
         const dispatcher = connection.play(fs.createReadStream(sound.path), { type: 'ogg/opus' });
 
         dispatcher.on('finish', () => {
             console.log(`${sound.name} (${sound.tags.join(',')}) has finished playing!`);
-            res();
+            res(sound.actions);
             return;
         });
 

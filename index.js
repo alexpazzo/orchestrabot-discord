@@ -32,7 +32,7 @@ client.on('ready', async () => {
         console.log('broadcast')
         const broadcast = client.voice.createBroadcast();
         // TODO change with the real audio
-        broadcast.play(fs.createReadStream('audio / nonlesei.mp3'), { type: 'ogg/opus' });
+        broadcast.play(fs.createReadStream('audio/notRandom/belli_diciotto.mp3'), { type: 'ogg/opus' });
         for (const connection of client.voice.connections.values()) {
             connection.play(broadcast);
         }
@@ -58,10 +58,10 @@ client.on('message', async msg => {
     if (!command) return;
     // else execute command
     try {
-        command.execute(msg, args);
-    } catch (error) {
-        console.error(error);
-        msg.reply("There was an error executing that command.").catch(console.error);
+        await command.execute(msg, args);
+    } catch (err) {
+        console.error(err);
+        msg.reply(`_There was an error executing that command_.\n${err.message}`).catch(console.error);
     }
 });
 

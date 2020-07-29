@@ -1,6 +1,6 @@
 const { Message, VoiceConnection } = require("discord.js");
-const { playSound } = require('./sound');
-
+const Sound = require('./sound');
+const random = require('../utils/random');
 
 module.exports = {
     name: 'needorchestra',
@@ -25,31 +25,27 @@ async function execute(message, args) {
             connection.on('debug', console.log);
         }
 
-        await randomPlaySound(connection);
+        await randomPlaySound(message, args);
+
     }
 }
-
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 /**
  * @param {VoiceConnection} connection 
  */
-async function randomPlaySound(connection) {
-    try {
-        // Play a random sound
-        await playSound(connection);
-        // Set timeout for the next sound
-        const next = random(3, 10) * 60 * 1000;
-        console.log(`Next sound will be at ${new Date(Date.now() + next).toISOString()}`);
+async function randomPlaySound(message, args) {
+    // Play a random sound
+    await Sound.execute(message, args);
 
-        setTimeout(
-            randomPlaySound,
-            next,
-            connection
-        );
-    } catch (error) {
-        console.error(error);
-    }
+    // Set timeout for the next sound
+    const next = random(5, 15) * 60 * 1000;
 
+    console.log(`Next sound will be at ${new Date(Date.now() + next).toISOString()}`);
 
+    setTimeout(
+        randomPlaySound,
+        next,
+        message,
+        []
+    );
 };
