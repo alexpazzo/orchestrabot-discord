@@ -2,6 +2,7 @@ const { Message, VoiceConnection } = require("discord.js");
 const fs = require("fs");
 const { join } = require("path");
 const { executeAction } = require('../utils/actions');
+const random = require('../utils/random');
 
 const SOUNDS = fs.readdirSync(join("audio"))
     .filter(file => file.endsWith(".ogg"))
@@ -50,8 +51,6 @@ async function execute(message, args) {
         }
     }
 }
-
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 /**
  * @param {VoiceConnection} connection 

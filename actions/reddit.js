@@ -1,13 +1,12 @@
 const fetch = require('node-fetch');
 const { Message } = require("discord.js");
+const random = require('../utils/random');
 
 module.exports = {
     name: 'reddit',
     execute
 };
 
-
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 /**
  * 
