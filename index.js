@@ -32,7 +32,7 @@ client.on('ready', async () => {
         console.log('broadcast')
         const broadcast = client.voice.createBroadcast();
         // TODO change with the real audio
-        broadcast.play(fs.createReadStream('audio/notRandom/belli_diciotto.mp3'), { type: 'ogg/opus' });
+        broadcast.play(fs.createReadStream('audio/notRandom/belli_diciotto.ogg'), { type: 'ogg/opus' });
         for (const connection of client.voice.connections.values()) {
             connection.play(broadcast);
         }
