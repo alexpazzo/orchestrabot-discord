@@ -4,10 +4,10 @@ const random = require('../utils/random');
 const puppeteer = require('puppeteer');
 
 let browser, page;
-(async () => {
+async function init() {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-})();
+}
 
 
 module.exports = {
@@ -22,7 +22,9 @@ module.exports = {
  * @param {Message} message 
  */
 async function execute(arg, message) {
-
+    if (!page) {
+        await init();
+    }
     await page.goto('https://it.banggood.com/Flashdeals.html', {
         waitUntil: 'networkidle0',
     });
