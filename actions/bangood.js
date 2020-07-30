@@ -1,14 +1,8 @@
 
 const { Message } = require("discord.js");
+const { default: fetch } = require("node-fetch");
+const cheerio = require('cheerio');
 const random = require('../utils/random');
-const puppeteer = require('puppeteer');
-
-let browser, page;
-async function init() {
-    browser = await puppeteer.launch();
-    page = await browser.newPage();
-}
-
 
 module.exports = {
     name: 'bangood',
@@ -22,18 +16,14 @@ module.exports = {
  * @param {Message} message 
  */
 async function execute(arg, message) {
-    if (!page) {
-        await init();
-    }
-    await page.goto('https://it.banggood.com/Flashdeals.html', {
-        waitUntil: 'networkidle0',
-    });
 
-    let handles = await page.$$('a.p-img.exclick');
+    const page = await fetch('https://it.banggood.com/Flashdeals.html').then(res => res.text());
 
-    const single = handles[random(0, handles.length)]
+    const $ = cheerio.load(page);
 
-    const href = await single.getProperty('href').then(handle => handle.jsonValue());
+    let allitems = $('.product-item > a');
 
-    message.channel.send(href);
+    const single = allitems[random(0, allitems.length)];
+
+    message.channel.send(single.attribs.href);
 }  
