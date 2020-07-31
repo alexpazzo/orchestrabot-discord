@@ -28,7 +28,7 @@ client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     // add cron for leave work
-    var job = new CronJob('* 18 * * *', function () {
+    var job = new CronJob('0 18 * * *', function () {
         console.log('broadcast')
         const broadcast = client.voice.createBroadcast();
         // TODO change with the real audio
